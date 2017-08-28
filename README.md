@@ -1,0 +1,2 @@
+# ComparativeTranscriptomeBookChapter
+repository of scripts for comparative transcriptome analysis
