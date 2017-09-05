@@ -31,8 +31,27 @@ $ cd ATH_GMA
 $ sh ./scripts/Section2.2_download_softwares.sh
 ```
 
-
 ### 2.3 Install R, DESeq2, and edgeR packages for RNA-Seq data analysis.
+
+To install packages for this analysis, we recommend to type commends in R interactive console rather than running this Rscript. You can start `R` in a Linux terminal or Terminal for OSX by simply typing `R`. 
+```bash
+$ cd ATH_GMA
+$ cat ./scripts/Section2.3_install_r_packages.R
+$ R
+```
+Commands preceded by `$` are executed under a Linux terminal, and commands preceded by `>` are executed under the R environments.
+
+```
+> source('https://bioconductor.org/biocLite.R')
+> biocLite('DESeq2')
+> biocLite('edgeR')
+> install.packages('igraph')
+# During process, you may need to choose a CRAN mirror close to you, if you haven't done it.
+> setwd("./software")
+> install.packages("OrthoClust_1.0.tar.gz", repos=NULL, type="source")
+```
+This process could take for a while and return wordy messages. If you see `* DONE (PACKAGE NAME)`, it usually means the package installed successfully. By typing `library('PACKAGE NAME')`, you can verify that the installation process has been completed. `OrthoClust` requires `igraph` package as one of its dependencies.
+
 
 ### 2.4 Download protein and genome sequences for Arabidopsis and soybean.
 
