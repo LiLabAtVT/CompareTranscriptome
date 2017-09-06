@@ -63,3 +63,18 @@ This process could take for a while and return wordy messages. If you see `* DON
 ### 3.3 Gene expression data processing. 
 ### 3.4 OrthoClust analysis.
 ### 3.5 Visualization of OrthoClust results
+## 4. Notes
+### 4.2 Obtaining one way best hit genes from each species
+
+As we explained in Notes 4.4 section, we provide scripts and sample datasets to identify k-best-hit genes from two species. 
+```bash
+$ cd ATH_GMA
+$ sh ./scripts/Section4.4_k-BestHits.sh
+```
+
+A script, `Section4.4_k-BestHits.sh` is an example for k = 5. By modifying or adding commands, you can try different `k` values. For example, in this command line, `python ../scripts/OrthologousGenes_OneWayTopNBestHit.py 5 ARATH2GLYMA.BLAST_ARATH2GLYMA.subset.txt`, you can put positive integer number (such as 2, 3, 4) instead of 5.   
+
+This shell script, `Section4.4_k-BestHits.sh` calls a python script `OrthologousGenes_OneWayTopNBestHit.py`. This python script requires input files located in processed_data folder. 
+
+To generate these input files, 2e separated BLAST results into 1) ARATH2GLYMA.BLAST_ARATH2GLYMA.txt generated from Arabidopsis queries to soybean DB and 2) ARATH2GLYMA.BLAST_GLYMA2ARATH.txt generated from soybean queries to Arabidopsis DB. As sample files, we uploaded 2,000 lines as subsets of input files. 
+
