@@ -5,7 +5,7 @@
 WORKDIR=$(pwd)
 OUTDIR=$2
 
-mkdir -p $WORKDIR/raw_data/fastq
+mkdir -p $WORKDIR/raw_data/fastq/$OUTDIR
 mkdir -p $WORKDIR/logs/fastq
 
 ### Setup the PATH environmental variable.
