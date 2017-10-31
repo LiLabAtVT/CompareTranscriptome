@@ -22,6 +22,8 @@ git clone https://github.com/LiLabAtVT/CompareTranscriptomeMIMB.git ATH_GMA
 
 For a project folder, we named `ATH_GMA` as default name, and used it as the working directory. If you replace the project folder name with another name, please be careful to replace it for scripts or paths. 
 
+![alt text](https://github.com/LiLabAtVT/CompareTranscriptomeMIMB/raw/master/docs/figures/Clone_Download_GitRep.png)
+
 
 ## 2. Materials 
 ### 2.1 Set up folder structure for data analysis.
@@ -32,7 +34,7 @@ $ cd ATH_GMA	#If you are not in ATH_GMA folder, move to the folder.
 $ sh ./scripts/Section2.1_setup_directory.sh
 ```
 After executing this script, you will get a folder structure like a figure below. 
-![](https://github.com/LiLabAtVT/CompareTranscriptomeMIMB/raw/master/docs/figures/Screen%20Shot%202017-10-30%20at%2016.45.14.png | width=100)
+![alt text](https://github.com/LiLabAtVT/CompareTranscriptomeMIMB/raw/master/docs/figures/Inital_FolderStructure.png)
 
 
 ### 2.2 Software installation
