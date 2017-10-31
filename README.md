@@ -31,7 +31,9 @@ For effective data management, we suggest you to create a folder structure using
 $ cd ATH_GMA	#If you are not in ATH_GMA folder, move to the folder. 
 $ sh ./scripts/Section2.1_setup_directory.sh
 ```
-After executing this script, you will get a folder structure like a figure below. [figure]
+After executing this script, you will get a folder structure like a figure below. 
+![alt text](https://github.com/LiLabAtVT/CompareTranscriptomeMIMB/raw/master/docs/figures/Screen%20Shot%202017-10-30%20at%2016.45.14.png)
+
 
 ### 2.2 Software installation
 
