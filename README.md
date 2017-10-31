@@ -33,6 +33,8 @@ For effective data management, we suggest you to create a folder structure using
 $ cd ATH_GMA	#If you are not in ATH_GMA folder, move to the folder. 
 $ sh ./scripts/Section2.1_setup_directory.sh
 ```
+
+### The initial folder structure
 After executing this script, you will get a folder structure like a figure below. 
 ![alt text](https://github.com/LiLabAtVT/CompareTranscriptomeMIMB/raw/master/docs/figures/Inital_FolderStructure.png)
 
@@ -128,10 +130,65 @@ $ sh ./scripts/Section2.5_download_fastq.sh ./raw_data/PRJNA301162.txt ATH
 $ sh ./scripts/Section2.5_download_fastq.sh ./raw_data/PRJNA197379.txt GMA
 ```
 
+### The second folder structure
+After successfully completing steps in `2. Materials` section, you will get a folder structure like a figure below. We only put related scripts among all scripts for the protocol. 
+![alt text](https://github.com/LiLabAtVT/CompareTranscriptomeMIMB/raw/master/docs/figures/Materials_FolderStructure.png)
 
 ## 3. Methods
+
+### A workflow of comparative transcriptome analysis between soybean and Arabidopsis. 
+A workflow (Figure 2 in a book chapter) is composed of three major parts: 1) identification of ortholous pairs between two species using BLAST, 2) RNA-seq analysis to get co-expression networks, and 3) running OrthoClust to cluster genes with orthologous relations. Blue fonts indicate scripts and bold fonts refer softwares used in this workflow.
+![alt text](https://github.com/LiLabAtVT/CompareTranscriptomeMIMB/raw/master/docs/figures/Figure2.png)
+
+
 ### 3.1 Identification of homologous pairs using BLAST.
+
+Analysis in this section is composed of three steps. You can run `Section3.2.1_BLAST.sh` with command lines below. 
+```bash
+$ cd ATH_GMA	#If you are already in ATH_GMA folder, do not type it. 
+$ sh ./scripts/Section3.2.1_BLAST.sh
+```
+
+Or you follow each step one by one. In this section, please pay attention to your location or working directory.  
+
+1. Prepare data for BLAST analysis by merging two protein sequences from section 2.4 into one file `cat [first_file] [second_file] > [merged_file]`.  
+```bash
+$ cd ATH_GMA	#If you are already in ATH_GMA folder, do not type it. 
+$ cat ./raw_data/Araport11.pep.fasta ./raw_data/GLYMA2.pep.fasta > ./processed_data/ATHGMA.pep.fasta
+```
+
+2. Build BLAST database with `makeblastdb`.
+```bash
+$ cd processed_data	# this step is performed in "processed_data" folder
+# Two commandlines below are doing the exactly same function. 
+$ makeblastdb -in ATHGMA.pep.fasta -out ATHGMA.pep.blastdb -dbtype prot -logfile makeblastdb.log
+$ makeblastdb -in ATHGMA.pep.fasta \
+              -out ATHGMA.pep.blastdb \
+              -dbtype prot \
+              -logfile makeblastdb.log
+```
+
+3. Perform BLAST analysis for protein sequences with `blastp`.
+```bash
+$ cd processed_data	# this step is performed in "processed_data" folder
+blastp -evalue 0.00001 \
+       -outfmt 6 -db ATHGMAX.pep.blastdb \
+       -query ATHGMA.pep.fasta > ATHGMA.pep.blastout 
+```
+
 ### 3.2 Obtaining reciprocal best hit (RBH) genes
+
+
+```bash
+$ cd ATH_GMA	#If you are already in ATH_GMA folder, do not type it. 
+$ sh ./scripts/Section3.2.2_RBH.sh
+```
+OR 
+```bash
+$ cd processed_data	# this step is performed in "processed_data" folder
+$ python ../scripts/ReciprocalBlastHit.py ATHGMA.pep.blastout ARATH GLYMA ARATH2GLYMA.RBH.txt 
+```
+
 ### 3.3 Gene expression data processing. 
 ### 3.4 OrthoClust analysis.
 ### 3.5 Visualization of OrthoClust results
