@@ -96,14 +96,14 @@ This process could take for a while and return wordy messages. If you see `* DON
 The Araport and DOE phytozome database require free registration to access and download data.
 
 1. Arabidopsis: Araport web site (www.araport.org) 
-- genomic sequences: TAIR10_Chr.all.fasta.gz on https://www.araport.org/downloads/TAIR10_genome_release/assembly
-- protein-coding sequences: Araport11_genes.201606.pep.fasta.gz on https://www.araport.org/downloads/Araport11_latest
-- gene annotation: Araport11_GFF3_genes_transposons.201606.gtf.gz on https://www.araport.org/downloads/Araport11_latest
+   - genomic sequences: TAIR10_Chr.all.fasta.gz on https://www.araport.org/downloads/TAIR10_genome_release/assembly
+   - protein-coding sequences: Araport11_genes.201606.pep.fasta.gz on https://www.araport.org/downloads/Araport11_latest
+   - gene annotation: Araport11_GFF3_genes_transposons.201606.gtf.gz on https://www.araport.org/downloads/Araport11_latest
 
 2. soybean: DOE phytozome database (https://phytozome.jgi.doe.gov/pz/portal.html#!bulk?org=Org_Gmax)
-- genomic sequences: Gmax_275_v2.0.fa.gz
-- protein-coding sequences: Gmax_275_Wm82.a2.v1.protein.fa.gz
-- gene annotation: Gmax_275_Wm82.a2.v1.gene_exons.gff3.gz
+   - genomic sequences: Gmax_275_v2.0.fa.gz
+   - protein-coding sequences: Gmax_275_Wm82.a2.v1.protein.fa.gz
+   - gene annotation: Gmax_275_Wm82.a2.v1.gene_exons.gff3.gz
 
 After downloading files, you need to locate them into `ATH_GMA/raw_data` folder to let scripts utilize these files. Then, you can use gunzip command such as `gunzip [gz compressed file]` to de-compress '*.gz' files. 
 ```bash
@@ -141,7 +141,7 @@ After successfully completing steps in `2. Materials` section, you will get a fo
 ### A workflow of comparative transcriptome analysis between soybean and Arabidopsis. 
 A workflow (See Figure 2 in a book chapter) is composed of three major parts: 1) identification of ortholous pairs between two species using BLAST, 2) RNA-seq analysis to get co-expression networks, and 3) running OrthoClust to cluster genes with orthologous relations. Blue fonts indicate scripts and bold fonts refer softwares used in this workflow.
 
-### c.f. Setting up the PATH for installed softwares.
+### Setting up the PATH for installed softwares.
 After installing softwares, if you newly connect terminal but haven't add your PATH for installed softwares, we recommend you either to `export` PATH for the softwares again or to add the path in `bashrc` or `bash_profile` file in your system for permanent uses. 
 ```bash
 # command lines below from line 9~13 in Section2.2_download_softwares_v2.sh. 
@@ -204,6 +204,22 @@ $ python ../scripts/ReciprocalBlastHit.py ATHGMA.pep.blastout ARATH GLYMA ARATH2
 
 An example file [ARATH2GLYMA.RBH.subset.txt](https://raw.githubusercontent.com/LiLabAtVT/CompareTranscriptomeMIMB/master/processed_data/ARATH2GLYMA.RBH.subset.txt) of RBH genes is provided. The user can use this file to perform the following analysis without running the RBH script. 
 
+First 10 lines from `ARATH2GLYMA.RBH.subset.txt` file as an example. 
+
+| Soybean gene | Arabidopsis gene | E-value of Soybean gene | E-value of Arabidopsis gene |
+| :---: | :---: | :---: | :---: |
+| Glyma.01G001300	| AT2G07050 | 0.0 | 0.0 |
+| Glyma.01G005800 | AT4G29310 | 0.0 | 0.0 |
+| Glyma.01G006100 | AT4G26300 | 0.0 | 0.0 |
+| Glyma.01G010100 | AT1G32090 | 0.0 | 0.0 |
+| Glyma.01G015400 | AT2G35470 | 6.26e-16 | 4.31e-18 |
+| Glyma.01G019400 | AT5G65670 | 1.9e-149 | 5.47e-145 |
+| Glyma.01G019700 | AT5G65640 | 5.48e-87 | 3.47e-87 |
+| Glyma.01G021300 | AT4G38040 | 0.0 | 0.0 |
+| Glyma.01G021400 | AT2G22600 | 3.69e-115 | 1.55e-117 |
+| Glyma.01G022500 | AT5G10510 | 0.0 | 0.0 |
+
+
 Although RBH genes are widely used in comparative genomic analysis, other methods can be used to identify homologous genes for downstream analysis (see [Note 4.2](https://github.com/LiLabAtVT/CompareTranscriptomeMIMB#42-obtaining-one-way-best-hit-genes-from-each-species)). 
 
 ### 3.3 Gene expression data processing. 
@@ -214,32 +230,32 @@ Read mapping is a processto align RNA-seq reads to the respective reference geno
 
 1. Create genome index by STAR before read mapping. 
 This step is only required to perform once with the respective references sequences for each species. 
-```bash
-$ cd ATH_GMA
-$ sh ./scripts/Section3.3.Step1.MakeIndex.sh
-```
-`Section3.3.Step1.MakeIndex.sh` contains two command lines to build index for Arabidopsis and soybean. Below is an example for Arabidopsis. 
-```bash
-$ WORKDIR=$(pwd)
-$ IDX=$WORKDIR/raw_data/ATH_STAR-2.5.2b_index
-$ GNM=$WORKDIR/raw_data/TAIR10_Chr.all.fasta
-$ GTF=$WORKDIR/raw_data/Araport11_GFF3_genes_transposons.201606.gtf
-$ STAR	--runMode genomeGenerate \
-		--genomeDir $IDX \
-		--genomeFastaFiles $GNM \
-		--sjdbGTFfile $GTF
-```
-When indexing is successfully finished, you can see newly generated files in `ATH_GMA/raw_data/[ATH|GMA]_STAR-2.5.2b_index` folder. 
-```
-# These are example files from indexing by STAR with Arabidopsis genome.
-$ cd ATH_GMA/raw_data/ATH_STAR-2.5.2b_index
-$ls -sh		# ls -sh shows file names and their human-readable file sizes. (zero size here does not mean empty.) 
-total 2.8G
-   0 chrLength.txt      9.8M exonGeTrInfo.tab     0 genomeParameters.txt  3.3M sjdbList.fromGTF.out.tab
-   0 chrNameLength.txt  4.0M exonInfo.tab      1.2G SA                    3.3M sjdbList.out.tab
-   0 chrName.txt        512K geneInfo.tab      1.5G SAindex               3.0M transcriptInfo.tab
-   0 chrStart.txt       142M Genome            3.5M sjdbInfo.txt
-```
+   ```bash
+   $ cd ATH_GMA
+   $ sh ./scripts/Section3.3.Step1.MakeIndex.sh
+   ```
+   `Section3.3.Step1.MakeIndex.sh` contains two command lines to build index for Arabidopsis and soybean. Below is an example for Arabidopsis. 
+   ```bash
+   $ WORKDIR=$(pwd)
+   $ IDX=$WORKDIR/raw_data/ATH_STAR-2.5.2b_index
+   $ GNM=$WORKDIR/raw_data/TAIR10_Chr.all.fasta
+   $ GTF=$WORKDIR/raw_data/Araport11_GFF3_genes_transposons.201606.gtf
+   $ STAR	--runMode genomeGenerate \
+			--genomeDir $IDX \
+			--genomeFastaFiles $GNM \
+			--sjdbGTFfile $GTF
+   ```
+   When indexing is successfully finished, you can see newly generated files in `ATH_GMA/raw_data/[ATH|GMA]_STAR-2.5.2b_index` folder. 
+   ```
+   # These are example files from indexing by STAR with Arabidopsis genome.
+   $ cd ATH_GMA/raw_data/ATH_STAR-2.5.2b_index
+   $ls -sh		# ls -sh shows file names and their human-readable file sizes. (zero size here does not mean empty.) 
+   total 2.8G
+      0 chrLength.txt      9.8M exonGeTrInfo.tab     0 genomeParameters.txt  3.3M sjdbList.fromGTF.out.tab
+      0 chrNameLength.txt  4.0M exonInfo.tab      1.2G SA                    3.3M sjdbList.out.tab
+      0 chrName.txt        512K geneInfo.tab      1.5G SAindex               3.0M transcriptInfo.tab
+      0 chrStart.txt       142M Genome            3.5M sjdbInfo.txt
+   ```
 
 2. Read mapping by STAR.
 `Section3.3.Step2.Mapping.[ATH|GMA].sh` is for mapping all sequencing reads files in `ATH_GMA/raw_data/fastq/[ATH|GMA]/` folders. 
