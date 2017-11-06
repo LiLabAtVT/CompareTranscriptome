@@ -24,6 +24,8 @@ For a project folder, we named `ATH_GMA` as default name, and used it as the wor
 
 ![alt text](https://github.com/LiLabAtVT/CompareTranscriptomeMIMB/raw/master/docs/figures/Clone_Download_GitRep.png)
 
+### 1.3 LINUX commands
+If you are a beginner of linux or OS X terminal, we strongly suggest you to review basic linux commands before or during further practices.
 
 ## 2. Materials 
 ### 2.1 Set up folder structure for data analysis.
@@ -137,9 +139,19 @@ After successfully completing steps in `2. Materials` section, you will get a fo
 ## 3. Methods
 
 ### A workflow of comparative transcriptome analysis between soybean and Arabidopsis. 
-A workflow (Figure 2 in a book chapter) is composed of three major parts: 1) identification of ortholous pairs between two species using BLAST, 2) RNA-seq analysis to get co-expression networks, and 3) running OrthoClust to cluster genes with orthologous relations. Blue fonts indicate scripts and bold fonts refer softwares used in this workflow.
-![alt text](https://github.com/LiLabAtVT/CompareTranscriptomeMIMB/raw/master/docs/figures/Figure2.png)
+A workflow (See Figure 2 in a book chapter) is composed of three major parts: 1) identification of ortholous pairs between two species using BLAST, 2) RNA-seq analysis to get co-expression networks, and 3) running OrthoClust to cluster genes with orthologous relations. Blue fonts indicate scripts and bold fonts refer softwares used in this workflow.
 
+### c.f. Setting up the PATH for installed softwares.
+After installing softwares, if you newly connect terminal but haven't add your PATH for installed softwares, we recommend you either to `export` PATH for the softwares again or to add the path in `bashrc` or `bash_profile` file in your system for permanent uses. 
+```bash
+# command lines below from line 9~13 in Section2.2_download_softwares_v2.sh. 
+### Setting up the PATH for installed softwares
+$ cd ATH_GMA
+$ workdir=$(pwd)
+$ softwarepath=$workdir/software/bin/
+$ echo $softwarepath
+$ export PATH=$PATH:$softwarepath
+```
 
 ### 3.1 Identification of homologous pairs using BLAST.
 
@@ -149,7 +161,7 @@ $ cd ATH_GMA	#If you are already in ATH_GMA folder, do not type it.
 $ sh ./scripts/Section3.2.1_BLAST.sh
 ```
 
-Or you follow each step one by one. In this section, please pay attention to your location or working directory.  
+Or you follow each step one by one. In this section, please pay attention to your location or working directory. For more details of BLAST options, please refer to `3.2.1 Identification of homologous pairs using BLAST.` in [our article in publisher name](https://github.com/LiLabAtVT/CompareTranscriptomeMIMB). 
 
 1. Prepare data for BLAST analysis by merging two protein sequences from section 2.4 into one file `cat [first_file] [second_file] > [merged_file]`.  
 ```bash
@@ -157,7 +169,7 @@ $ cd ATH_GMA	#If you are already in ATH_GMA folder, do not type it.
 $ cat ./raw_data/Araport11.pep.fasta ./raw_data/GLYMA2.pep.fasta > ./processed_data/ATHGMA.pep.fasta
 ```
 
-2. Build BLAST database with `makeblastdb`.
+2. Build BLAST database with `makeblastdb`. 
 ```bash
 $ cd processed_data	# this step is performed in "processed_data" folder
 # Two commandlines below are doing the exactly same function. 
@@ -178,6 +190,7 @@ blastp -evalue 0.00001 \
 
 ### 3.2 Obtaining reciprocal best hit (RBH) genes
 
+To identify homologous genes in two species, the BLAST results from protein sequence alignment were first parsed to identify the best BLAST hit for each soybean protein in the Arabidopsis protein lists. 
 
 ```bash
 $ cd ATH_GMA	#If you are already in ATH_GMA folder, do not type it. 
@@ -189,7 +202,107 @@ $ cd processed_data	# this step is performed in "processed_data" folder
 $ python ../scripts/ReciprocalBlastHit.py ATHGMA.pep.blastout ARATH GLYMA ARATH2GLYMA.RBH.txt 
 ```
 
+An example file [ARATH2GLYMA.RBH.subset.txt](https://raw.githubusercontent.com/LiLabAtVT/CompareTranscriptomeMIMB/master/processed_data/ARATH2GLYMA.RBH.subset.txt) of RBH genes is provided. The user can use this file to perform the following analysis without running the RBH script. 
+
+Although RBH genes are widely used in comparative genomic analysis, other methods can be used to identify homologous genes for downstream analysis (see [Note 4.2](https://github.com/LiLabAtVT/CompareTranscriptomeMIMB#42-obtaining-one-way-best-hit-genes-from-each-species)). 
+
 ### 3.3 Gene expression data processing. 
+
+This section is mainly composed of three steps: A) read mapping (step 1 and step 2); B) read counting (step 3) and C) FPKM calculation. Three steps will be performed with following sub-steps. 
+
+Read mapping is a processto align RNA-seq reads to the respective reference genome. For more details of STAR options, please refer to `3.3 Gene expression data processing` in [our article in publisher name](https://github.com/LiLabAtVT/CompareTranscriptomeMIMB).
+
+1. Create genome index by STAR before read mapping. 
+This step is only required to perform once with the respective references sequences for each species. 
+```bash
+$ cd ATH_GMA
+$ sh ./scripts/Section3.3.Step1.MakeIndex.sh
+```
+`Section3.3.Step1.MakeIndex.sh` contains two command lines to build index for Arabidopsis and soybean. Below is an example for Arabidopsis. 
+```bash
+$ WORKDIR=$(pwd)
+$ IDX=$WORKDIR/raw_data/ATH_STAR-2.5.2b_index
+$ GNM=$WORKDIR/raw_data/TAIR10_Chr.all.fasta
+$ GTF=$WORKDIR/raw_data/Araport11_GFF3_genes_transposons.201606.gtf
+$ STAR	--runMode genomeGenerate \
+		--genomeDir $IDX \
+		--genomeFastaFiles $GNM \
+		--sjdbGTFfile $GTF
+```
+When indexing is successfully finished, you can see newly generated files in `ATH_GMA/raw_data/[ATH|GMA]_STAR-2.5.2b_index` folder. 
+```
+# These are example files from indexing by STAR with Arabidopsis genome.
+$ cd ATH_GMA/raw_data/ATH_STAR-2.5.2b_index
+$ls -sh		# ls -sh shows file names and their human-readable file sizes. (zero size here does not mean empty.) 
+total 2.8G
+   0 chrLength.txt      9.8M exonGeTrInfo.tab     0 genomeParameters.txt  3.3M sjdbList.fromGTF.out.tab
+   0 chrNameLength.txt  4.0M exonInfo.tab      1.2G SA                    3.3M sjdbList.out.tab
+   0 chrName.txt        512K geneInfo.tab      1.5G SAindex               3.0M transcriptInfo.tab
+   0 chrStart.txt       142M Genome            3.5M sjdbInfo.txt
+```
+
+2. Read mapping by STAR.
+`Section3.3.Step2.Mapping.[ATH|GMA].sh` is for mapping all sequencing reads files in `ATH_GMA/raw_data/fastq/[ATH|GMA]/` folders. 
+
+```bash
+$ cd ATH_GMA
+$ sh ./scripts/Section3.3.Step2.Mapping.ATH.sh
+$ sh ./scripts/Section3.3.Step2.Mapping.GMA.sh
+```
+The following command below shows one example of such SRR ids (*_1 and *_2, paired-end reads files have two inputs).
+```bash
+$ STAR	--genomeDir $IDX \
+		--readFilesIn $WORKDIR/raw_data/SRR2927328_1.fastq.gz   $WORKDIR/raw_data/SRR2927328_2.fastq.gz \
+		--outFileNamePrefix $WORKDIR/processed_data/bam/SRR2927328/SRR2927328 \
+		--outSAMtype BAM SortedByCoordinate
+```
+
+These are results from STAR mapping step. You can see mapping statistics from `*Log.final.out` files. To print out the file you can type `cat SRR2927328Log.final.out`.
+```
+$ cd ATH_GMA/processed_data/bam/SRR2927328/SRR2927328
+$ ls -sh
+total 2.1G
+2.1G SRR2927328Aligned.sortedByCoord.out.bam  256K SRR2927328Log.out           3.8M SRR2927328SJ.out.tab
+   0 SRR2927328Log.final.out                     0 SRR2927328Log.progress.out
+$ cat SRR2927328Log.final.out
+```
+
+3. Read counting with featureCounts.
+With mapping results from the previous step, FeatureCounts will calculate how many reads map to each gene region. 
+`Section3.3.Step3.ReadCount.[ATH|GMA]` is designed to handle all mapping results (BAM files) under `ATH_GMA/processed_data/bam/[SRRid]` folrders. 
+
+```bash
+$ cd ATH_GMA
+$ sh ./scripts/Section3.3.Step3.ReadCount.ATH.sh
+$ sh ./scripts/Section3.3.Step3.ReadCount.GMA.sh
+```
+The following command below shows one example of such SRR ids (*_1 and *_2, paired-end reads files have two inputs).
+```bash
+$ WORKDIR=$(pwd)
+$ GTF=$WORKDIR/raw_data/Araport11_GFF3_genes_transposons.201606.gtf
+$ BAM=$WORKDIR/processed_data/bam
+$ RC=$WORKDIR/processed_data/rc
+$ featureCounts -t exon \
+		-g gene_id \
+		-p \
+		-a $GTF \
+		-o $RC/SRR2927328.readcount.txt \
+		$BAM/SRR2927328/SRR2927328Aligned.sortedByCoord.out.bam
+```
+
+4. FPKM calculation using DESeq2 and edgeR.
+
+We provide the unified R script, `ATH_GMA/scripts/Section3.3.Step4.FPKM.R` with table fils for replicate structure of the samples (PRJNA301162.csv for Arabidopsis and PRJNA197379.csv for soybean). 
+The R script is composed of many blocks and will generate multiple out files. Hence, we paid attention to explain input requirements, contents of outputs, and functions of each step. For more details, please look at the script, `ATH_GMA/scripts/Section3.3.Step4.FPKM.R`. 
+
+```bash
+$ cd ATH_GMA
+$ Rscript ./scripts/Section3.3.Step4.FPKM.R ./processed_data/fpkm/ATH	# for Arabidopsis data
+$ Rscript ./scripts/Section3.3.Step4.FPKM.R ./processed_data/fpkm/GMA	# for soybean data
+```
+
+5. Expression data will be summarized and converted to gene co-expression networks. 
+
 ### 3.4 OrthoClust analysis.
 ### 3.5 Visualization of OrthoClust results
 ## 4. Notes
