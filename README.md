@@ -228,8 +228,9 @@ This section is mainly composed of three steps: A) read mapping (step 1 and step
 
 Read mapping is a processto align RNA-seq reads to the respective reference genome. For more details of STAR options, please refer to `3.3 Gene expression data processing` in [our article in publisher name](https://github.com/LiLabAtVT/CompareTranscriptomeMIMB).
 
-1. Create genome index by STAR before read mapping. 
-This step is only required to perform once with the respective references sequences for each species. 
+**1. Create genome index by STAR before read mapping.**
+
+   This step is only required to perform once with the respective references sequences for each species. 
    ```bash
    $ cd ATH_GMA
    $ sh ./scripts/Section3.3.Step1.MakeIndex.sh
@@ -257,70 +258,112 @@ This step is only required to perform once with the respective references sequen
       0 chrStart.txt       142M Genome            3.5M sjdbInfo.txt
    ```
 
-2. Read mapping by STAR.
-`Section3.3.Step2.Mapping.[ATH|GMA].sh` is for mapping all sequencing reads files in `ATH_GMA/raw_data/fastq/[ATH|GMA]/` folders. 
+**2. Read mapping by STAR.**
 
-```bash
-$ cd ATH_GMA
-$ sh ./scripts/Section3.3.Step2.Mapping.ATH.sh
-$ sh ./scripts/Section3.3.Step2.Mapping.GMA.sh
-```
-The following command below shows one example of such SRR ids (*_1 and *_2, paired-end reads files have two inputs).
-```bash
-$ STAR	--genomeDir $IDX \
-		--readFilesIn $WORKDIR/raw_data/SRR2927328_1.fastq.gz   $WORKDIR/raw_data/SRR2927328_2.fastq.gz \
-		--outFileNamePrefix $WORKDIR/processed_data/bam/SRR2927328/SRR2927328 \
-		--outSAMtype BAM SortedByCoordinate
-```
+   `Section3.3.Step2.Mapping.[ATH|GMA].sh` is for mapping all sequencing reads files in `ATH_GMA/raw_data/fastq/[ATH|GMA]/` folders. 
 
-These are results from STAR mapping step. You can see mapping statistics from `*Log.final.out` files. To print out the file you can type `cat SRR2927328Log.final.out`.
-```
-$ cd ATH_GMA/processed_data/bam/SRR2927328/SRR2927328
-$ ls -sh
-total 2.1G
-2.1G SRR2927328Aligned.sortedByCoord.out.bam  256K SRR2927328Log.out           3.8M SRR2927328SJ.out.tab
-   0 SRR2927328Log.final.out                     0 SRR2927328Log.progress.out
-$ cat SRR2927328Log.final.out
-```
+   ```bash
+   $ cd ATH_GMA
+   $ sh ./scripts/Section3.3.Step2.Mapping.ATH.sh
+   $ sh ./scripts/Section3.3.Step2.Mapping.GMA.sh
+   ```
+   The following command below shows one example of such SRR ids (*_1 and *_2, paired-end reads files have two inputs).
+   ```bash
+   $ STAR	--genomeDir $IDX \
+			--readFilesIn $WORKDIR/raw_data/SRR2927328_1.fastq.gz   $WORKDIR/raw_data/SRR2927328_2.fastq.gz \
+			--outFileNamePrefix $WORKDIR/processed_data/bam/SRR2927328/SRR2927328 \
+			--outSAMtype BAM SortedByCoordinate
+   ```
 
-3. Read counting with featureCounts.
-With mapping results from the previous step, FeatureCounts will calculate how many reads map to each gene region. 
-`Section3.3.Step3.ReadCount.[ATH|GMA]` is designed to handle all mapping results (BAM files) under `ATH_GMA/processed_data/bam/[SRRid]` folrders. 
+   These are results from STAR mapping step. You can see mapping statistics from `*Log.final.out` files. To print out the file you can type `cat SRR2927328Log.final.out`.
+   ```
+   $ cd ATH_GMA/processed_data/bam/SRR2927328/SRR2927328
+   $ ls -sh
+   total 2.1G
+   2.1G SRR2927328Aligned.sortedByCoord.out.bam  256K SRR2927328Log.out           3.8M SRR2927328SJ.out.tab
+      0 SRR2927328Log.final.out                     0 SRR2927328Log.progress.out
+   $ cat SRR2927328Log.final.out
+   ```
 
-```bash
-$ cd ATH_GMA
-$ sh ./scripts/Section3.3.Step3.ReadCount.ATH.sh
-$ sh ./scripts/Section3.3.Step3.ReadCount.GMA.sh
-```
-The following command below shows one example of such SRR ids (*_1 and *_2, paired-end reads files have two inputs).
-```bash
-$ WORKDIR=$(pwd)
-$ GTF=$WORKDIR/raw_data/Araport11_GFF3_genes_transposons.201606.gtf
-$ BAM=$WORKDIR/processed_data/bam
-$ RC=$WORKDIR/processed_data/rc
-$ featureCounts -t exon \
-		-g gene_id \
-		-p \
-		-a $GTF \
-		-o $RC/SRR2927328.readcount.txt \
-		$BAM/SRR2927328/SRR2927328Aligned.sortedByCoord.out.bam
-```
+**3. Read counting with featureCounts.**
 
-4. FPKM calculation using DESeq2 and edgeR.
+   With mapping results from the previous step, FeatureCounts will calculate how many reads map to each gene region. 
+   `Section3.3.Step3.ReadCount.[ATH|GMA]` is designed to handle all mapping results (BAM files) under `ATH_GMA/processed_data/bam/[SRRid]` folrders. 
 
-We provide the unified R script, `ATH_GMA/scripts/Section3.3.Step4.FPKM.R` with table fils for replicate structure of the samples (PRJNA301162.csv for Arabidopsis and PRJNA197379.csv for soybean). 
-The R script is composed of many blocks and will generate multiple out files. Hence, we paid attention to explain input requirements, contents of outputs, and functions of each step. For more details, please look at the script, `ATH_GMA/scripts/Section3.3.Step4.FPKM.R`. 
+   ```bash
+   $ cd ATH_GMA
+   $ sh ./scripts/Section3.3.Step3.ReadCount.ATH.sh
+   $ sh ./scripts/Section3.3.Step3.ReadCount.GMA.sh
+   ```
+   The following command below shows one example of such SRR ids (*_1 and *_2, paired-end reads files have two inputs).
+   ```bash
+   $ WORKDIR=$(pwd)
+   $ GTF=$WORKDIR/raw_data/Araport11_GFF3_genes_transposons.201606.gtf
+   $ BAM=$WORKDIR/processed_data/bam
+   $ RC=$WORKDIR/processed_data/rc
+   $ featureCounts	-t exon \
+				-g gene_id \
+				-p \
+				-a $GTF \
+				-o $RC/SRR2927328.readcount.txt \
+				$BAM/SRR2927328/SRR2927328Aligned.sortedByCoord.out.bam
+   ```
 
-```bash
-$ cd ATH_GMA
-$ Rscript ./scripts/Section3.3.Step4.FPKM.R ./processed_data/fpkm/ATH	# for Arabidopsis data
-$ Rscript ./scripts/Section3.3.Step4.FPKM.R ./processed_data/fpkm/GMA	# for soybean data
-```
+**4. FPKM calculation using DESeq2 and edgeR.**
 
-5. Expression data will be summarized and converted to gene co-expression networks. 
+   We provide the unified R script, `ATH_GMA/scripts/Section3.3.Step4.FPKM.R` with table fils for replicate structure of the samples (PRJNA301162.csv for Arabidopsis and PRJNA197379.csv for soybean). 
+   The R script is composed of many blocks and will generate multiple out files. Hence, we paid attention to explain input requirements, contents of outputs, and functions of each step. For more details, please look at the script, `ATH_GMA/scripts/Section3.3.Step4.FPKM.R`. 
+
+   ```bash
+   $ cd ATH_GMA
+   $ Rscript ./scripts/Section3.3.Step4.FPKM.R ./processed_data/fpkm/ATH	# for Arabidopsis data
+   $ Rscript ./scripts/Section3.3.Step4.FPKM.R ./processed_data/fpkm/GMA	# for soybean data
+   ```
+
+**5. Expression data will be summarized and converted to gene co-expression networks. **
+
+   The Rscript we provide `ATH_GMA/scripts/Section3.3.Step5_FPKM2NETWORK.R` converts a gene expression matrix to a co-expression network. Co-expression networks are generated from calculating correlation between genes and their p-values, and selected by the cut-off with p value < 0.001 and Pearson Correlation Coefficient > 0.99.
+
+   The R script is written for `GMX_FPKM.csv`. To generate co-expression network for Arabidopsis data, `GMX_FPKM.csv` can be replaced with `ATH_FPKM.csv`. For more details, please look at the script, `ATH_GMA/scripts/Section3.3.Step5_FPKM2NETWORK.R`. 
+ 
+   ```bash 
+   $ cd ATH_GMA
+   $ Rscript ./scripts/Section3.3.Step5_FPKM2NETWORK.R
+   ```
 
 ### 3.4 OrthoClust analysis.
+
+From this session we can run OrthoClust and save its results into file for further analysis using a Rscript `ATH_GMA/scripts/Section3.4.Step1_OrthoClust.R`.
+To perform OthoClust analysis, we require three input data files: 1) the gene co-expression network from soybean; 2) the gene co-expression network from Arabidopsis; and 3) the orthologous gene pairs between two species. You can find examples of these input data files from **Table 2** in [the book chapter (we will change this link once the book chapter is published](https://github.com/LiLabAtVT/CompareTranscriptomeMIMB#34-orthoclust-analysis). 
+
+```bash
+$ cd ATH_GMA
+$ Rscript ./scripts/Section3.4.Step1_OrthoClust.R
+```
+
 ### 3.5 Visualization of OrthoClust results
+
+To prepare visualization of OrthoClust results, we can choose one module among several hundreds modules. `Section3.4.Step2_CytoscapeInput.R` will show demonstrations for extracting genes in the target module and making plots with these genes.
+
+We suggest users to run commands of `Section3.4.Step2_CytoscapeInput.R` under the R environments rather than executing the Rscript under a Linux terminal. Since OrthoClust generates randome results for each run, users will have different results from what the book chapter reports as well as all results from users should be different. As an example we choose module 8 (`ModuleName=8`) on the 39th line of `Section3.4.Step2_CytoscapeInput.R`. However genes assigned to module 8 will be different, so users can change this number according to results from `print(ModulesOfInterest)`, the 38th line of the Rscript. Another way to choose interesting module that we suggest is to check `Orthoclust_Results_Summary.csv` from the previous step. 
+
+```
+line 36: ### There would be a lot of interesting modules, but we will explor Module 8 as an example. 
+line 37: ModulesOfInterest= ortho_module_list_sumOrdered[c(1:10),1:6]
+line 38: print(ModulesOfInterest)
+line 39: ModuleName=8		#This interger number can be changed according to you interest. 
+```
+
+To go though this session, you can run the Rscript following the command. 
+
+```bash
+$ cd ATH_GMA
+$ Rscript ./scripts/Section3.4.Step2_CytoscapeInput.R
+```
+
+For actual visualization step using Cytoscpe, please refer to the book chapter `3.4.3 Visualization of OrthoClust results as a network.`. 
+
+
 ## 4. Notes
 ### 4.2 Obtaining one way best hit genes from each species
 
