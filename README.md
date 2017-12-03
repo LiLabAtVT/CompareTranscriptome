@@ -354,7 +354,8 @@ $ Rscript ./scripts/Section3.4.Step1_OrthoClust.R
 
 Cytoscape is a platform to visualize networks and to incorporate open source applications for network analysis. Here we use Cytoscape to visualize OrthoClust results and there are three steps. 
 
-**1. Preparation of Cytoscape input files** 
+**1. Preparation of Cytoscape input files**
+
    To prepare visualization of OrthoClust results, we can choose one module among several hundred modules. `Section3.4.Step2_CytoscapeInput.R` will show demonstrations for extracting genes in an interesting module and making plots with these genes.
 
    We suggest running commands of `Section3.4.Step2_CytoscapeInput.R` in the R environments such as R console rather than executing the Rscript in a Terminal. This is because OrthoClust randomly assigns genes into modules, generated results for each run from the user are different from what the book chapter reports. As an example, we chose module 8 (`ModuleName=8`) on the 39th line of `Section3.4.Step2_CytoscapeInput.R` from OrthoClust result. However, gene assignment will be different for every run, so the user needs to change this module number according to results from `print(ModulesOfInterest)`, the 38th line of the Rscript. Also, running R commands in R console allow the user to explore different module numbers. `Orthoclust_Results_Summary.csv` file from the previous section provide module IDs and the number of genes for each module. We suggest checking the file to choose interesting modules to explore in this section.
@@ -376,9 +377,11 @@ Cytoscape is a platform to visualize networks and to incorporate open source app
    $ Rscript ./scripts/Section3.4.Step2_CytoscapeInput.R
    ```
 **2. Gene expression patterns for modules**
+
    Among results from `Section3.4.Step2_CytoscapeInput.R`, there will be a PDF named `ExpressionProfile_Module8.pdf` or `ExpressionProfile_Module[Chosen Integer].pdf` for a selected module from the previous step. This figure shows expression levels of genes from the module with averaged expression value along different time points, and it would be similar with **Figure 4. Expression plots of genes from Arabidopsis and soybea** in the book chapter. This Rscrip can be modified and improved according to the need and interests of the user. 
      
 **3. Network visualization using Cytoscape**
+
    Please refer to the book chapter subtitled, **3.4.3 Visualization of OrthoClust results as a network** for this visualization step using Cytoscape.
  
 
