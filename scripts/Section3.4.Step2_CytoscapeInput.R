@@ -33,7 +33,7 @@ GmxGeFile="GMX_FPKM.csv"
 GMX_GE=read.table(GmxGeFile, sep = ",", header = T, stringsAsFactors= T, row.names =1, check.names=FALSE)
 
 
-### There would be a lot of interesting modules, but we will explor Module 8 as an example. 
+### There would be many modules, but we will explore Module 8 as an example. 
 ModulesOfInterest= ortho_module_list_sumOrdered[c(1:10),1:6]
 print(ModulesOfInterest)
 ModuleName=8
