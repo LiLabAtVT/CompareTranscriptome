@@ -4,9 +4,9 @@
 
 Expression analysis is commonly used to understand the tissue or stress specificity of genes in large gene families. The goal of comparative transcriptome analysis is to identify conserved co-expressed genes in two or more species. In order to compare transcriptomes between any two species, we took a three-step approach: 
 
-1. Establish homologous relationships between proteins in the two species.
-2. Identify expression data obtained from experiments that are performed under similar conditions or tissue types. 
-3. Compare the expression patterns between the two data sets. 
+**1. Establish homologous relationships between proteins in the two species**
+**2. Identify expression data obtained from experiments that are performed under similar conditions or tissue types**
+**3. Compare the expression patterns between the two data sets**
 
 In this protocol, we will compare published time course seed embryo expression data from Arabidopsis with data from the same tissue in soybean as a demonstration of how to apply computational tools to comparative transcriptome analysis.  
 
@@ -54,7 +54,7 @@ If software is successfully installed, the version information for each tool wil
 
 ### 2.3 Install R, DESeq2, and edgeR packages for RNA-Seq data analysis
 
-In addition to the software from the previous step, we will use `**R**`, which is a programing language and environment for statistical data analysis. If `R` is not installed on a system, it will be had to be installed before moving to next step. In order to determine whether the system has `R`, users can simply type R into the Terminal. 
+In addition to the software from the previous step, we will use `R`, which is a programing language and environment for statistical data analysis. If `R` is not installed on a system, it will be had to be installed before moving to next step. In order to determine whether the system has `R`, users can simply type R into the Terminal. 
 
 ```bash
 $R
@@ -78,7 +78,7 @@ $ R
 ```
 In this protocol, commands preceded by `$` are executed under a Linux Terminal, and commands preceded by `>` are executed under a R console.
 
-All R packages for this protocol will be able to be installed though package installers like Bioconductor except `OrthoClust`. `OrthoClust is required to be installed from its package file, and `OrthoClust_1.0.tar.gz` is included in `software` directory of this GitHub repository. 
+All R packages for this protocol will be able to be installed though package installers like Bioconductor except `OrthoClust`. `OrthoClust` is required to be installed from its package file, and `OrthoClust_1.0.tar.gz` is included in `software` directory of this GitHub repository. 
 Some packages require other packages as their dependencies such as `OrthoClust` requires `igraph`. We recommend allowing R Package Installer to install dependences together.  
 
 ```
@@ -108,7 +108,7 @@ The Araport and DOE phytozome database both require free registration to access 
    - protein-coding sequences: Gmax_275_Wm82.a2.v1.protein.fa.gz
    - gene annotation: Gmax_275_Wm82.a2.v1.gene_exons.gff3.gz
 
-After downloading sequence files and gene annotation files, these files are needed to be moved into the `ATH_GMA/raw_data` directory to let future scripts to work on these files. Then, compressed '*.gz' files can be de-compressed with gunzip command such as `gunzip [gz compressed file]`. 
+After downloading sequence files and gene annotation files, these files are needed to be moved into the `ATH_GMA/raw_data` directory to let future scripts to work on these files. Then, compressed *.gz files can be de-compressed with gunzip command such as `gunzip [a gz file]`. 
 
 ```bash
 $ cd ATH_GMA 
@@ -120,7 +120,7 @@ $ cd ..			# Move back to the ATH_GMA directory.
 
 ### 2.5 Download raw data from published RNA-Seq experiments
 
-`fastq-dump` is a tool from the Sequence Read Archive (SRA) toolkit, and allows the user to download raw sequencing data with SRR accession ID from SRA. If fastq-dump is already installed from the `2.2 Software installation` section, then typing `fastq-dump` in a Terminal shows its usage and version information, and it is located in the `ATH_GMA/software/sratoolkit.2.8.2-1-centos_linux64/bin/fastq-dump` directory. 
+`fastq-dump` is a tool from the Sequence Read Archive (SRA) toolkit, and allows the user to download raw sequencing data with SRR accession ID from SRA. If fastq-dump is already installed from the [2.2 Software installation](https://github.com/LiLabAtVT/CompareTranscriptomeMIMB#22-software-installation) section, then typing `fastq-dump` in a Terminal shows its usage and version information, and it is located in the `ATH_GMA/software/sratoolkit.2.8.2-1-centos_linux64/bin/fastq-dump` directory. 
 
 The example below is to download a sequencing file (accession ID: SRR2927328) to the `./raw_data` directory. 
 ```bash
@@ -138,7 +138,7 @@ $ sh ./scripts/Section2.5_download_fastq.sh ./raw_data/PRJNA197379.txt GMA
 ```
 
 ### The second folder structure
-Successfully completed steps in **`2. Materials`** section result in a folder structure shown in the figure below. 
+Successfully completed steps in **2. Materials** section result in a folder structure shown in the figure below. 
 
 ![alt text](https://github.com/LiLabAtVT/CompareTranscriptomeMIMB/raw/master/docs/figures/Materials_FolderStructure.png)
 
@@ -171,25 +171,25 @@ $ sh ./scripts/Section3.2.1_BLAST.sh
 
 The `Section3.2.1_BLAST.sh` script is composed of three steps, and the same results can be achieved by following three instructions below. Please pay attention to locate the right working directory for each step.
 
-1. Prepare BLAST input data by merge two protein sequence files into one file.
+1. Prepare BLAST input data by merge two protein sequence files into one file
 ```bash
 $ cd ATH_GMA 
 # cat [first_file] [second_file] > [merged_file]
 $ cat ./raw_data/Araport11.pep.fasta ./raw_data/GLYMA2.pep.fasta > ./processed_data/ATHGMA.pep.fasta
 ```
 
-2. Build BLAST database with `makeblastdb`. 
+2. Build BLAST database with `makeblastdb`
 ```bash
-$ cd ATH_GMA/processed_data	# This step is performed in "processed_data" directory.
+$ cd ATH_GMA/processed_data	# This step is performed in the 'processed_data' directory.
 $ makeblastdb -in ATHGMA.pep.fasta \
               -out ATHGMA.pep.blastdb \
               -dbtype prot \
               -logfile makeblastdb.log
 ```
 
-3. Perform BLAST analysis for protein sequences with `blastp`.
+3. Perform BLAST analysis for protein sequences with `blastp`
 ```bash
-$ cd ATH_GMA/processed_data	# This step is performed in "processed_data" directory.
+$ cd ATH_GMA/processed_data	# This step is performed in the 'processed_data' directory.
 $ blastp -evalue 0.00001 \
        -outfmt 6 -db ATHGMAX.pep.blastdb \
        -query ATHGMA.pep.fasta > ATHGMA.pep.blastout 
@@ -207,7 +207,7 @@ $ sh ./scripts/Section3.2.2_RBH.sh
 ```
 OR 
 ```bash
-$ cd ATH_GMA/processed_data	# This step is performed in "processed_data" directory.
+$ cd ATH_GMA/processed_data	# This step is performed in the 'processed_data' directory.
 $ python ../scripts/ReciprocalBlastHit.py ATHGMA.pep.blastout ARATH GLYMA ARATH2GLYMA.RBH.txt 
 ```
 
