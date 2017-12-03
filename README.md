@@ -329,14 +329,14 @@ Read mapping is a process to map RNA-seq reads to the respective reference genom
 
 **5. Generation of co-expression networks from gene expression profile**
 
-     A co-expression network can be generated from correlation values between gene expression levels of averaged FPKM values by calculating Pearson correlation coefficient values and their p-values. Gene pairs with p-value < 0.001 and Pearson Correlation Coefficient > 0.99 are selected to generate a co-expression network. Pairs of genes are used as node, and correlation values of gene pairs are used for their edge value in a co-expression network. 
+   A co-expression network can be generated from correlation values between gene expression levels of averaged FPKM values by calculating Pearson correlation coefficient values and their p-values. Gene pairs with p-value < 0.001 and Pearson Correlation Coefficient > 0.99 are selected to generate a co-expression network. Pairs of genes are used as node, and correlation values of gene pairs are used for their edge value in a co-expression network. 
 
-     A Rscript we provide, `ATH_GMA/scripts/Section3.3.Step5_FPKM2NETWORK.R`, converts a gene expression matrix to a co-expression network. This R script is written for an input file, `GMX_FPKM.csv`. To generate a co-expression network for Arabidopsis data, `GMX_FPKM.csv` can be replaced with `ATH_FPKM.csv` in the R script. For more details, please read descriptions in the script, `ATH_GMA/scripts/Section3.3.Step5_FPKM2NETWORK.R`. 
+   A Rscript we provide, `ATH_GMA/scripts/Section3.3.Step5_FPKM2NETWORK.R`, converts a gene expression matrix to a co-expression network. This R script is written for an input file, `GMX_FPKM.csv`. To generate a co-expression network for Arabidopsis data, `GMX_FPKM.csv` can be replaced with `ATH_FPKM.csv` in the R script. For more details, please read descriptions in the script, `ATH_GMA/scripts/Section3.3.Step5_FPKM2NETWORK.R`. 
  
-     ```bash 
-     $ cd ATH_GMA
-     $ Rscript ./scripts/Section3.3.Step5_FPKM2NETWORK.R
-     ```
+   ```bash 
+   $ cd ATH_GMA
+   $ Rscript ./scripts/Section3.3.Step5_FPKM2NETWORK.R
+   ```
 
 ### 3.4 OrthoClust analysis
 
@@ -355,33 +355,32 @@ $ Rscript ./scripts/Section3.4.Step1_OrthoClust.R
 Cytoscape is a platform to visualize networks and to incorporate open source applications for network analysis. Here we use Cytoscape to visualize OrthoClust results and there are three steps. 
 
 **1. Preparation of Cytoscape input files** 
-     To prepare visualization of OrthoClust results, we can choose one module among several hundred modules. `Section3.4.Step2_CytoscapeInput.R` will show demonstrations for extracting genes in an interesting module and making plots with these genes.
+   To prepare visualization of OrthoClust results, we can choose one module among several hundred modules. `Section3.4.Step2_CytoscapeInput.R` will show demonstrations for extracting genes in an interesting module and making plots with these genes.
 
-     We suggest running commands of `Section3.4.Step2_CytoscapeInput.R` in the R environments such as R console rather than executing the Rscript in a Terminal. This is because OrthoClust randomly assigns genes into modules, generated results for each run from the user are different from what the book chapter reports. As an example, we chose module 8 (`ModuleName=8`) on the 39th line of `Section3.4.Step2_CytoscapeInput.R` from OrthoClust result. However, gene assignment will be different for every run, so the user needs to change this module number according to results from `print(ModulesOfInterest)`, the 38th line of the Rscript. Also, running R commands in R console allow the user to explore different module numbers. `Orthoclust_Results_Summary.csv` file from the previous section provide module IDs and the number of genes for each module. We suggest checking the file to choose interesting modules to explore in this section.
+   We suggest running commands of `Section3.4.Step2_CytoscapeInput.R` in the R environments such as R console rather than executing the Rscript in a Terminal. This is because OrthoClust randomly assigns genes into modules, generated results for each run from the user are different from what the book chapter reports. As an example, we chose module 8 (`ModuleName=8`) on the 39th line of `Section3.4.Step2_CytoscapeInput.R` from OrthoClust result. However, gene assignment will be different for every run, so the user needs to change this module number according to results from `print(ModulesOfInterest)`, the 38th line of the Rscript. Also, running R commands in R console allow the user to explore different module numbers. `Orthoclust_Results_Summary.csv` file from the previous section provide module IDs and the number of genes for each module. We suggest checking the file to choose interesting modules to explore in this section.
 
-     ```
-     line 37: ModulesOfInterest= ortho_module_list_sumOrdered[c(1:10),1:6]
-     line 38: print(ModulesOfInterest)
-     line 39: ModuleName=8	#This integer number can be changed according to the user’s interest. 
-     ```
-     R command lines in this section can be run in the `ATH_GMA`, the working directory by pasting commands from `Section3.4.Step2_CytoscapeInput.R` on R environments.
-     ```bash
-     $ cd ATH_GMA
-     $ R
-     > 
-     ```
-     For quick process, running R script in a Terminal also works. 
-     ```bash
-     $ cd ATH_GMA
-     $ Rscript ./scripts/Section3.4.Step2_CytoscapeInput.R
-     ```
+   ```
+   line 37: ModulesOfInterest= ortho_module_list_sumOrdered[c(1:10),1:6]
+   line 38: print(ModulesOfInterest)
+   line 39: ModuleName=8	#This integer number can be changed according to the user’s interest. 
+   ```
+   R command lines in this section can be run in the `ATH_GMA`, the working directory by pasting commands from `Section3.4.Step2_CytoscapeInput.R` on R environments.
+   ```bash
+   $ cd ATH_GMA
+   $ R
+   > 
+   ```
+   For quick process, running R script in a Terminal also works. 
+   ```bash
+   $ cd ATH_GMA
+   $ Rscript ./scripts/Section3.4.Step2_CytoscapeInput.R
+   ```
 **2. Gene expression patterns for modules**
-     Among results from `Section3.4.Step2_CytoscapeInput.R`, there will be a PDF named `ExpressionProfile_Module8.pdf` or `ExpressionProfile_Module[Chosen Integer].pdf` for a selected module from the previous step. This figure shows expression levels of genes from the module with averaged expression value along different time points, and it would be similar with
-**Figure 4. Expression plots of genes from Arabidopsis and soybea** in the book chapter. This Rscrip can be modified and improved according to the need and interests of the user. 
+   Among results from `Section3.4.Step2_CytoscapeInput.R`, there will be a PDF named `ExpressionProfile_Module8.pdf` or `ExpressionProfile_Module[Chosen Integer].pdf` for a selected module from the previous step. This figure shows expression levels of genes from the module with averaged expression value along different time points, and it would be similar with **Figure 4. Expression plots of genes from Arabidopsis and soybea** in the book chapter. This Rscrip can be modified and improved according to the need and interests of the user. 
      
 **3. Network visualization using Cytoscape**
-     Please refer to the book chapter subtitled, **3.4.3 Visualization of OrthoClust results as a network** for this visualization step using Cytoscape.
-
+   Please refer to the book chapter subtitled, **3.4.3 Visualization of OrthoClust results as a network** for this visualization step using Cytoscape.
+ 
 
 ## 4. Notes
 ### 4.2 Obtaining one way best hit genes from each species
@@ -396,5 +395,3 @@ $ sh ./scripts/Section4.4_k-BestHits.sh
 This shell script, `Section4.4_k-BestHits.sh` calls a python script `OrthologousGenes_OneWayTopNBestHit.py`. The shell script provides an example to identify five best hit genes (k=5). By modifying or adding commands in the shell script, different `k` values can be used. For example, in the command line, `python ../scripts/OrthologousGenes_OneWayTopNBestHit.py 5 ARATH2GLYMA.BLAST_ARATH2GLYMA.subset.txt`, other positive integer numbers (such 2, 3, 4) can be replaced with `5`.  
 
 The python script requires input files located in processed_data folder. To generate these input files for the python script, separated BLAST results are needed 1) `ARATH2GLYMA.BLAST_ARATH2GLYMA.txt` generated from Arabidopsis queries to soybean DB and 2) `ARATH2GLYMA.BLAST_GLYMA2ARATH.txt` generated from soybean queries to Arabidopsis DB. As sample files, we uploaded 2,000 lines as subsets of input files. 
-
-
