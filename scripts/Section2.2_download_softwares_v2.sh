@@ -17,7 +17,7 @@ cd software
 
 echo -e "\n\n`date +"%b%d|%T"`\t\c";
 echo "======== Installing BLAST ========"
-wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.6.0+-x64-linux.tar.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.6.0/ncbi-blast-2.6.0+-x64-linux.tar.gz
 tar -xzf ncbi-blast-2.6.0+-x64-linux.tar.gz
 ./ncbi-blast-2.6.0+/bin/makeblastdb -h	
 cp ./ncbi-blast-2.6.0+/bin/* $softwarepath
