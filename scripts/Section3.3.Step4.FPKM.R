@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
-### 2017-06-06 by Jiyoung Lee
-### USAGE: Rscript RNA-seq_CalcFPKM.R [working directory path]
+### 2019-03-24 by Jiyoung Lee
+### USAGE: Rscript Section3.3.Step4.FPKM.R [working directory path]
 ### This script requires multiple input files to be present in the working directory
 ### 
 ### For example, we will genenrate FPKM data for soybean data in the folder "processed_data/fpkm/GMA"
@@ -28,12 +28,10 @@
 ### design file where average expression for each gene was calculated across biological replicates. This 
 ### file will be the input file for the downstream analysis.
 
-### To install packages, if it's your first time to run DESeq2 and edgeR
+### To install packages, if it's your first time to run DESeq2
 source("http://bioconductor.org/biocLite.R")
 biocLite("DESeq2")
-biocLite("edgeR")
 library(DESeq2)
-library(edgeR)
 
 
 ### To set a working directory
@@ -98,12 +96,12 @@ write.csv(as.data.frame(normRC.round), file=normRcName, row.names=T)
 print(paste0("===== Normalized readcounts file: ", normRcName))
 
 
-### To calculate FPKM using edgeR package
-library(edgeR)
+### To calculate FPKM using gene length
 AnnoData = SRRrcTable[,c("Geneid","Length")]
-normRC.DGEList = DGEList(counts=normRC, genes=AnnoData)
-normRPKM = rpkm(normRC.DGEList, normRC.DGEList$genes$Length)
-normRPKM.round = round(normRPKM, 3)
+mcols(dds)$basepairs <- AnnoData[, "Length"]
+fpkm(dds)
+normFPKM = fpkm(dds)
+normFPKM.round = round(normFPKM, 3)
 
 ### To write normalized FPKM into XXX_RCmatrix.norm.FPKM.csv.
 NormFPKMName = paste0(gsub(".csv", "", prjCsv), ".RCmatrix.norm.FPKM.csv")
